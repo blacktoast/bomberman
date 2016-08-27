@@ -1,6 +1,7 @@
 var mainState = {
     preload: function(){
         game.load.image('wall', 'assets/wall.png');
+        game.load.image('brick', 'assets/brick.png');
     },
 
     create: function(){
@@ -10,6 +11,7 @@ var mainState = {
         game.stage.backgroundColor = "#287800";
 
         this.wallList = game.add.group();
+        this.brickList = game.add.group();
 
         this.createMap();
     },
@@ -27,7 +29,7 @@ var mainState = {
                     // add nothing, space for grass
                 } else {
                     if(Math.floor(Math.random() * 3)){
-                        // add brick
+                        this.addBrick(x, y);
                     }
                 }
             }
@@ -38,6 +40,11 @@ var mainState = {
         var wall = game.add.sprite(x * this.PIXEL_SIZE, y * this.PIXEL_SIZE, 'wall');
         this.wallList.add(wall);
     },
+
+    addBrick: function(x, y){
+        var brick = game.add.sprite(x * this.PIXEL_SIZE, y * this.PIXEL_SIZE, 'brick');
+        this.brickList.add(brick);
+    }
 };
 
 var game = new Phaser.Game(600, 600);
