@@ -2,6 +2,7 @@ var mainState = {
     preload: function(){
         game.load.image('wall', 'assets/wall.png');
         game.load.image('brick', 'assets/brick.png');
+        game.load.image('bomber', 'assets/bomber.png');
     },
 
     create: function(){
@@ -14,6 +15,7 @@ var mainState = {
         this.brickList = game.add.group();
 
         this.createMap();
+        this.addPlayer();
     },
 
     update: function(){
@@ -34,6 +36,10 @@ var mainState = {
                 }
             }
         }
+    },
+
+    addPlayer: function(){
+        this.player = game.add.sprite(0, 0, 'bomber');
     },
 
     addWall: function(x, y){
