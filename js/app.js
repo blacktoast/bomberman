@@ -7,6 +7,10 @@ var mainState = {
         game.load.image('bomb', 'assets/bomb.png');
         game.load.image('bomber', 'assets/bomber.png');
         game.load.image('explosion', 'assets/explosion.png');
+        game.load.image('bomber-front', 'assets/bomber-front.png');
+        game.load.image('bomber-left', 'assets/bomber-left.png');
+        game.load.image('bomber-right', 'assets/bomber-right.png');
+        game.load.image('bomber-back', 'assets/bomber-back.png');
     },
 
     create: function(){
@@ -41,15 +45,19 @@ var mainState = {
         if (this.cursor.down.isDown || this.cursor.up.isDown || this.cursor.right.isDown || this.cursor.left.isDown){
             if (this.cursor.left.isDown){
                 this.player.body.velocity.x = -150;
+                this.player.loadTexture('bomber-left', 0);
             }
             if (this.cursor.right.isDown){
                 this.player.body.velocity.x = +150;
+                this.player.loadTexture('bomber-right', 0);
             }
             if (this.cursor.up.isDown){
                 this.player.body.velocity.y = -150;
+                this.player.loadTexture('bomber-back', 0);
             }
             if (this.cursor.down.isDown){
                 this.player.body.velocity.y = 150;
+                this.player.loadTexture('bomber-front', 0);
             }
         } else{
             this.player.body.velocity.x = 0;
