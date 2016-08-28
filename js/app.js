@@ -3,11 +3,12 @@ var mainState = {
         game.load.image('wall', 'assets/wall.png');
         game.load.image('brick', 'assets/brick.png');
         game.load.image('bomber', 'assets/bomber.png');
+        game.load.image('grass', 'assets/grass.png');
     },
 
     create: function(){
-        this.PIXEL_SIZE = 40;
         this.BLOCK_COUNT = 15;
+        this.PIXEL_SIZE = GAME_SIZE / this.BLOCK_COUNT;
 
         game.stage.backgroundColor = "#287800";
         game.physics.startSystem(Phaser.Physics.ARCADE);
@@ -15,6 +16,7 @@ var mainState = {
 
         this.wallList = game.add.group();
         this.brickList = game.add.group();
+        this.grassList = game.add.group();
 
         this.createMap();
         this.addPlayer();
@@ -52,10 +54,12 @@ var mainState = {
                 else if(x % 2 === 0 && y % 2 === 0){
                     this.addWall(x, y);
                 } else if(x < 3 && y < 3){
-                    // add nothing, space for grass
+                    this.addGrass(x, y);
                 } else {
                     if(Math.floor(Math.random() * 2)){
                         this.addBrick(x, y);
+                    } else {
+                        this.addGrass(x, y);
                     }
                 }
             }
@@ -83,8 +87,18 @@ var mainState = {
         this.brickList.add(brick);
 
     },
+
+    addGrass: function(x, y){
+        var grass = game.add.sprite(x * this.PIXEL_SIZE, y * this.PIXEL_SIZE, 'grass');
+        game.physics.arcade.enable(grass);
+        grass.body.immovable = true;
+        this.grassList.add(grass);
+
+    },
 };
 
-var game = new Phaser.Game(600, 600);
+var GAME_SIZE = 600;
+
+var game = new Phaser.Game(GAME_SIZE, GAME_SIZE);
 game.state.add('main', mainState);
 game.state.start('main');
