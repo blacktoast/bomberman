@@ -32,12 +32,20 @@ var mainState = {
         this.grassList = game.add.group();
         this.bombList = game.add.group();
         this.explosionList = game.add.group();
+        this.bombList_2 = game.add.group();
+        this.explosionList_2 = game.add.group();
 
         this.createMap();
-        this.addPlayer();
+        this.addPlayers();
 
         this.cursor = game.input.keyboard.createCursorKeys();
+        this.enterKey = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
         this.spaceKey = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+
+        this.aKey = game.input.keyboard.addKey(Phaser.Keyboard.A);
+        this.sKey = game.input.keyboard.addKey(Phaser.Keyboard.S);
+        this.dKey = game.input.keyboard.addKey(Phaser.Keyboard.D);
+        this.wKey = game.input.keyboard.addKey(Phaser.Keyboard.W);
     },
 
     update: function(){
@@ -64,13 +72,51 @@ var mainState = {
             this.player.body.velocity.y = 0;
         }
 
-        if (this.spaceKey.justUp){
-            this.dropBomb(this.player.x, this.player.y);
+        if (this.enterKey.justUp){
+            this.dropBomb(1);
         }
+
+        if (this.aKey.isDown || this.sKey.isDown || this.dKey.isDown || this.wKey.isDown){
+            if (this.aKey.isDown){
+                this.player_2.body.velocity.x = -150;
+                this.player_2.loadTexture('bomber-left', 0);
+                // this.player_2.body.velocity.y = 0;
+            }
+            if (this.dKey.isDown){
+                this.player_2.body.velocity.x = +150;
+                this.player_2.loadTexture('bomber-right', 0);
+                // this.player_2.body.velocity.y = 0;
+            }
+            if (this.wKey.isDown){
+                this.player_2.body.velocity.y = -150;
+                this.player_2.loadTexture('bomber-back', 0);
+                // this.player_2.body.velocity.x = 0;
+            }
+            if (this.sKey.isDown){
+                this.player_2.body.velocity.y = 150;
+                this.player_2.loadTexture('bomber-front', 0);
+                // this.player_2.body.velocity.x = 0;
+            }
+        } else{
+            this.player_2.body.velocity.x = 0;
+            this.player_2.body.velocity.y = 0;
+        }
+
+        if (this.spaceKey.justUp){
+            this.dropBomb(2);
+        }
+
+
 
         game.physics.arcade.collide(this.player, this.wallList);
         game.physics.arcade.collide(this.player, this.brickList);
         game.physics.arcade.overlap(this.player, this.explosionList, function(){game.state.start('main');}, null, this);
+        game.physics.arcade.overlap(this.player, this.explosionList_2, function(){game.state.start('main');}, null, this);
+
+        game.physics.arcade.collide(this.player_2, this.wallList);
+        game.physics.arcade.collide(this.player_2, this.brickList);
+        game.physics.arcade.overlap(this.player_2, this.explosionList_2, function(){game.state.start('main');}, null, this);
+        game.physics.arcade.overlap(this.player_2, this.explosionList, function(){game.state.start('main');}, null, this);
     },
 
     createMap: function(){
@@ -81,7 +127,7 @@ var mainState = {
                 }
                 else if(x % 2 === 0 && y % 2 === 0){
                     this.addWall(x, y);
-                } else if(x < 4 && y < 4){
+                } else if(x < 4 && y < 4 || x > 10 && y > 10){
                     this.addGrass(x, y);
                 } else {
                     if(Math.floor(Math.random() * 3)){
@@ -94,9 +140,13 @@ var mainState = {
         }
     },
 
-    addPlayer: function(){
-        this.player = game.add.sprite(this.PIXEL_SIZE, this.PIXEL_SIZE, 'bomber');
+    addPlayers: function(){
+
+        this.player = game.add.sprite(GAME_SIZE - 2 * this.PIXEL_SIZE, GAME_SIZE - 2 * this.PIXEL_SIZE, 'bomber');
         game.physics.arcade.enable(this.player);
+
+        this.player_2 = game.add.sprite(this.PIXEL_SIZE, this.PIXEL_SIZE, 'bomber');
+        game.physics.arcade.enable(this.player_2);
 
     },
 
@@ -179,24 +229,47 @@ var mainState = {
         }, 1000);
     },
 
-    dropBomb: function(x, y){
-        var gridX = x - x % 40;
-        var gridY = y - y % 40;
+    dropBomb: function(player){
+        if(player == 1){
+            var gridX = this.player.x - this.player.x % 40;
+            var gridY = this.player.y - this.player.y % 40;
 
-        var bomb = game.add.sprite(gridX, gridY, 'bomb');
-        game.physics.arcade.enable(bomb);
-        bomb.body.immovable = true;
-        this.bombList.add(bomb);
+            var bomb = game.add.sprite(gridX, gridY, 'bomb');
+            game.physics.arcade.enable(bomb);
+            bomb.body.immovable = true;
+            this.bombList.add(bomb);
 
-        var detonateBomb = this.detonateBomb;
-        var explosionList = this.explosionList;
-        var wallList = this.wallList;
-        var brickList = this.brickList;
+            var detonateBomb = this.detonateBomb;
+            var explosionList = this.explosionList;
+            var wallList = this.wallList;
+            var brickList = this.brickList;
 
-        setTimeout(function(){
-            bomb.kill();
-            detonateBomb(bomb.x, bomb.y, explosionList, wallList,brickList);
-        }, 2000);
+            setTimeout(function(){
+                bomb.kill();
+                detonateBomb(bomb.x, bomb.y, explosionList, wallList, brickList);
+            }, 2000);
+
+        } else if (player == 2){
+            var gridX = this.player_2.x - this.player_2.x % 40;
+            var gridY = this.player_2.y - this.player_2.y % 40;
+
+            var bomb = game.add.sprite(gridX, gridY, 'bomb');
+            game.physics.arcade.enable(bomb);
+            bomb.body.immovable = true;
+            this.bombList_2.add(bomb);
+
+            var detonateBomb = this.detonateBomb;
+            var explosionList_2 = this.explosionList_2;
+            var wallList = this.wallList;
+            var brickList = this.brickList;
+
+            setTimeout(function(){
+                bomb.kill();
+                detonateBomb(bomb.x, bomb.y, explosionList_2, wallList, brickList);
+            }, 2000);
+
+        }
+
     },
 
     addGround: function(x, y){
