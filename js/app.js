@@ -18,6 +18,16 @@ var mainState = {
 
         this.createMap();
         this.addPlayer();
+
+        var upKey = game.input.keyboard.addKey(Phaser.Keyboard.UP);
+        var downKey = game.input.keyboard.addKey(Phaser.Keyboard.DOWN);
+        var rightKey = game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
+        var leftKey = game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
+
+        upKey.onDown.add(this.moveUp, this);
+        downKey.onDown.add(this.moveDown, this);
+        rightKey.onDown.add(this.moveRight, this);
+        leftKey.onDown.add(this.moveLeft, this);
     },
 
     update: function(){
@@ -58,7 +68,31 @@ var mainState = {
         game.physics.arcade.enable(brick);
         this.brickList.add(brick);
 
-    }
+    },
+
+    moveUp: function(){
+        if(this.player.y > 0){
+            this.player.y -= this.PIXEL_SIZE;
+        }
+    },
+
+    moveDown: function(){
+        if(this.player.y < (600 - this.PIXEL_SIZE)){
+            this.player.y += this.PIXEL_SIZE;
+        }
+    },
+
+    moveRight: function(){
+        if(this.player.x < (600 - this.PIXEL_SIZE)){
+            this.player.x += this.PIXEL_SIZE;
+        }
+    },
+
+    moveLeft: function(){
+        if(this.player.x > 0){
+            this.player.x -= this.PIXEL_SIZE;
+        }
+    },
 };
 
 var game = new Phaser.Game(600, 600);
