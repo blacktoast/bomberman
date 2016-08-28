@@ -4,6 +4,7 @@ var mainState = {
         game.load.image('brick', 'assets/brick.png');
         game.load.image('bomber', 'assets/bomber.png');
         game.load.image('grass', 'assets/grass.png');
+        game.load.image('bomb', 'assets/bomb.png');
     },
 
     create: function(){
@@ -17,28 +18,38 @@ var mainState = {
         this.wallList = game.add.group();
         this.brickList = game.add.group();
         this.grassList = game.add.group();
+        this.bombList = game.add.group();
 
         this.createMap();
         this.addPlayer();
 
         this.cursor = game.input.keyboard.createCursorKeys();
-
+        this.spaceKey = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
     },
 
     update: function(){
 
         if (this.cursor.down.isDown || this.cursor.up.isDown || this.cursor.right.isDown || this.cursor.left.isDown){
-            if (this.cursor.left.isDown)
+            if (this.cursor.left.isDown){
                 this.player.body.velocity.x = -150;
-            if (this.cursor.right.isDown)
+            }
+            if (this.cursor.right.isDown){
                 this.player.body.velocity.x = +150;
-            if (this.cursor.up.isDown)
+            }
+            if (this.cursor.up.isDown){
                 this.player.body.velocity.y = -150;
-            if (this.cursor.down.isDown)
+            }
+            if (this.cursor.down.isDown){
                 this.player.body.velocity.y = 150;
+            }
         } else{
             this.player.body.velocity.x = 0;
             this.player.body.velocity.y = 0;
+        }
+
+        if (this.spaceKey.justUp){
+            this.dropBomb(this.player.x, this.player.y)
+    		console.log("hello");
         }
 
         game.physics.arcade.collide(this.player, this.wallList);
@@ -94,6 +105,16 @@ var mainState = {
         grass.body.immovable = true;
         this.grassList.add(grass);
 
+    },
+
+    dropBomb: function(x, y){
+        var gridX = x - x % 40;
+        var gridY = y - y % 40;
+        console.log(x, y);
+        var bomb = game.add.sprite(gridX, gridY, 'bomb');
+        game.physics.arcade.enable(bomb);
+        bomb.body.immovable = true;
+        this.bombList.add(bomb);
     },
 };
 
