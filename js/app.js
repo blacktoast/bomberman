@@ -28,17 +28,17 @@ var mainState = {
                 this.addGround(x, y);
             }
         }
-
         this.wallList = game.add.group();
         this.brickList = game.add.group();
         this.grassList = game.add.group();
         this.bombList = game.add.group();
-        this.explosionList = game.add.group();
         this.bombList_2 = game.add.group();
+        this.addPlayers();
+        this.explosionList = game.add.group();
         this.explosionList_2 = game.add.group();
 
         this.createMap();
-        this.addPlayers();
+        // this.addPlayers();
 
         this.cursor = game.input.keyboard.createCursorKeys();
         this.enterKey = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
