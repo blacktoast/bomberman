@@ -1,10 +1,11 @@
 var mainState = {
     preload: function(){
+        game.load.image('ground', 'assets/ground.png');
+        game.load.image('grass', 'assets/grass.png');
         game.load.image('wall', 'assets/wall.png');
         game.load.image('brick', 'assets/brick.png');
-        game.load.image('bomber', 'assets/bomber.png');
-        game.load.image('grass', 'assets/grass.png');
         game.load.image('bomb', 'assets/bomb.png');
+        game.load.image('bomber', 'assets/bomber.png');
         game.load.image('explosion', 'assets/explosion.png');
     },
 
@@ -12,9 +13,15 @@ var mainState = {
         this.BLOCK_COUNT = 15;
         this.PIXEL_SIZE = GAME_SIZE / this.BLOCK_COUNT;
 
-        game.stage.backgroundColor = "#287800";
+        game.stage.backgroundColor = "#49311C";
         game.physics.startSystem(Phaser.Physics.ARCADE);
         game.world.enableBody = true;
+
+        for (var x = 0; x < 15; x++) {
+            for (var y = 0; y < 15; y++) {
+                this.addGround(x, y);
+            }
+        }
 
         this.wallList = game.add.group();
         this.brickList = game.add.group();
@@ -66,10 +73,10 @@ var mainState = {
                 }
                 else if(x % 2 === 0 && y % 2 === 0){
                     this.addWall(x, y);
-                } else if(x < 3 && y < 3){
+                } else if(x < 4 && y < 4){
                     this.addGrass(x, y);
                 } else {
-                    if(Math.floor(Math.random() * 2)){
+                    if(Math.floor(Math.random() * 3)){
                         this.addBrick(x, y);
                     } else {
                         this.addGrass(x, y);
@@ -109,7 +116,7 @@ var mainState = {
 
     },
 
-    detonateBomb: function(x, y, explosionList, wallList){
+    detonateBomb: function(x, y, explosionList, wallList, brickList){
         var fire1 = game.add.sprite(x, y, 'explosion');
         fire1.body.immovable = true;
         explosionList.add(fire1);
@@ -146,6 +153,21 @@ var mainState = {
             explosionList.forEach(function(element){
                 element.kill();
             });
+            var temp = brickList.filter(function(element){
+                if(element.x == fire1.x && element.y == fire1.y ||
+                    element.x == fire2.x && element.y == fire2.y ||
+                    element.x == fire3.x && element.y == fire3.y ||
+                    element.x == fire4.x && element.y == fire4.y ||
+                    element.x == fire5.x && element.y == fire5.y){
+                    return true;
+                } else{
+                    return false;
+                }
+            });
+
+            temp.list.forEach(function(element){
+                element.kill();
+            });
         }, 1000);
     },
 
@@ -161,11 +183,18 @@ var mainState = {
         var detonateBomb = this.detonateBomb;
         var explosionList = this.explosionList;
         var wallList = this.wallList;
+        var brickList = this.brickList;
 
         setTimeout(function(){
             bomb.kill();
-            detonateBomb(bomb.x, bomb.y, explosionList, wallList);
+            detonateBomb(bomb.x, bomb.y, explosionList, wallList,brickList);
         }, 2000);
+    },
+
+    addGround: function(x, y){
+        var wall = game.add.sprite(x * this.PIXEL_SIZE, y * this.PIXEL_SIZE, 'ground');
+        wall.body.immovable = true;
+
     },
 
 };
