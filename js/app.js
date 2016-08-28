@@ -1,3 +1,5 @@
+var scoreBoard = document.querySelectorAll(".score");
+
 var mainState = {
     preload: function(){
         game.load.image('ground', 'assets/ground.png');
@@ -110,13 +112,13 @@ var mainState = {
 
         game.physics.arcade.collide(this.player, this.wallList);
         game.physics.arcade.collide(this.player, this.brickList);
-        game.physics.arcade.overlap(this.player, this.explosionList, function(){game.state.start('main');}, null, this);
-        game.physics.arcade.overlap(this.player, this.explosionList_2, function(){game.state.start('main');}, null, this);
+        game.physics.arcade.overlap(this.player, this.explosionList, function(){this.burn(1);}, null, this);
+        game.physics.arcade.overlap(this.player, this.explosionList_2, function(){this.burn(1);}, null, this);
 
         game.physics.arcade.collide(this.player_2, this.wallList);
         game.physics.arcade.collide(this.player_2, this.brickList);
-        game.physics.arcade.overlap(this.player_2, this.explosionList_2, function(){game.state.start('main');}, null, this);
-        game.physics.arcade.overlap(this.player_2, this.explosionList, function(){game.state.start('main');}, null, this);
+        game.physics.arcade.overlap(this.player_2, this.explosionList_2, function(){this.burn(2);}, null, this);
+        game.physics.arcade.overlap(this.player_2, this.explosionList, function(){this.burn(2);}, null, this);
     },
 
     createMap: function(){
@@ -138,6 +140,14 @@ var mainState = {
                 }
             }
         }
+    },
+
+    burn: function(player){
+        var score = Number(scoreBoard[player - 1].innerText);
+        console.log(score);
+        scoreBoard[player - 1].innerText = score + 1;
+
+        game.state.start('main');
     },
 
     addPlayers: function(){
