@@ -5,6 +5,7 @@ var mainState = {
         game.load.image('bomber', 'assets/bomber.png');
         game.load.image('grass', 'assets/grass.png');
         game.load.image('bomb', 'assets/bomb.png');
+        game.load.image('explosion', 'assets/explosion.png');
     },
 
     create: function(){
@@ -19,6 +20,7 @@ var mainState = {
         this.brickList = game.add.group();
         this.grassList = game.add.group();
         this.bombList = game.add.group();
+        this.explosionList = game.add.group();
 
         this.createMap();
         this.addPlayer();
@@ -48,12 +50,12 @@ var mainState = {
         }
 
         if (this.spaceKey.justUp){
-            this.dropBomb(this.player.x, this.player.y)
-    		console.log("hello");
+            this.dropBomb(this.player.x, this.player.y);
         }
 
         game.physics.arcade.collide(this.player, this.wallList);
         game.physics.arcade.collide(this.player, this.brickList);
+        game.physics.arcade.overlap(this.player, this.explosionList, function(){game.state.start('main');}, null, this);
     },
 
     createMap: function(){
@@ -107,15 +109,65 @@ var mainState = {
 
     },
 
+    detonateBomb: function(x, y, explosionList, wallList){
+        var fire1 = game.add.sprite(x, y, 'explosion');
+        fire1.body.immovable = true;
+        explosionList.add(fire1);
+
+        var fire2 = game.add.sprite(x, y + 40, 'explosion');
+        fire2.body.immovable = true;
+        explosionList.add(fire2);
+        if(game.physics.arcade.overlap(fire2, wallList)){
+            fire2.kill();
+        }
+
+        var fire3 = game.add.sprite(x, y - 40, 'explosion');
+        fire3.body.immovable = true;
+        explosionList.add(fire3);
+        if(game.physics.arcade.overlap(fire3, wallList)){
+            fire3.kill();
+        }
+
+        var fire4 = game.add.sprite(x + 40, y, 'explosion');
+        fire4.body.immovable = true;
+        explosionList.add(fire4);
+        if(game.physics.arcade.overlap(fire4, wallList)){
+            fire4.kill();
+        }
+
+        var fire5 = game.add.sprite(x - 40, y, 'explosion');
+        fire5.body.immovable = true;
+        explosionList.add(fire5);
+        if(game.physics.arcade.overlap(fire5, wallList)){
+            fire5.kill();
+        }
+
+        setTimeout(function(){
+            explosionList.forEach(function(element){
+                element.kill();
+            });
+        }, 1000);
+    },
+
     dropBomb: function(x, y){
         var gridX = x - x % 40;
         var gridY = y - y % 40;
-        console.log(x, y);
+
         var bomb = game.add.sprite(gridX, gridY, 'bomb');
         game.physics.arcade.enable(bomb);
         bomb.body.immovable = true;
         this.bombList.add(bomb);
+
+        var detonateBomb = this.detonateBomb;
+        var explosionList = this.explosionList;
+        var wallList = this.wallList;
+
+        setTimeout(function(){
+            bomb.kill();
+            detonateBomb(bomb.x, bomb.y, explosionList, wallList);
+        }, 2000);
     },
+
 };
 
 var GAME_SIZE = 600;
