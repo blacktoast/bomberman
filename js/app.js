@@ -55,6 +55,8 @@ var mainState = {
 
         this.background;
         this.button;
+
+        this.gameInPlay = true;
     },
 
     update: function(){
@@ -82,7 +84,8 @@ var mainState = {
         }
 
         if (this.enterKey.justUp){
-            this.dropBomb(1);
+            if(this.gameInPlay)
+                this.dropBomb(1);
         }
 
         if (this.aKey.isDown || this.sKey.isDown || this.dKey.isDown || this.wKey.isDown){
@@ -112,7 +115,8 @@ var mainState = {
         }
 
         if (this.spaceKey.justUp){
-            this.dropBomb(2);
+            if(this.gameInPlay)
+                this.dropBomb(2);
         }
 
 
@@ -158,7 +162,7 @@ var mainState = {
         } else {
             this.player_2.kill();
         }
-
+        this.gameInPlay = false;
         this.showRoundWinner(player);
     },
 
@@ -301,7 +305,7 @@ var mainState = {
     },
 
     showRoundWinner: function(player){
-        this.background = game.add.tileSprite(40, 240, 520, 120, 'ground');
+        // this.background = game.add.tileSprite(40, 240, 520, 120, 'ground');
         this.button = game.add.button(230, 330, 'next-round');
 
         // this.button.onInputOver.add(over, this);
