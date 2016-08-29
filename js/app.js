@@ -16,6 +16,8 @@ var mainState = {
         game.load.image('next-round', 'assets/next-round.png');
         game.load.image('start-game', 'assets/start-game.png');
         game.load.image('play-again', 'assets/play-again.png');
+        game.load.image('blue-flag', 'assets/blue-flag.png');
+        game.load.image('red-flag', 'assets/red-flag.png');
     },
 
     create: function(){
@@ -36,6 +38,7 @@ var mainState = {
         this.grassList = game.add.group();
         this.bombList = game.add.group();
         this.bombList_2 = game.add.group();
+        this.flagList = game.add.group();
         this.addPlayers();
         this.explosionList = game.add.group();
         this.explosionList_2 = game.add.group();
@@ -136,11 +139,18 @@ var mainState = {
 
         game.physics.arcade.overlap(this.player_2, this.explosionList_2, function(){this.burn(2);}, null, this);
         game.physics.arcade.overlap(this.player_2, this.explosionList, function(){this.burn(2);}, null, this);
+
+        game.physics.arcade.overlap(this.player, this.flagList.children[0], function(){this.getFlag(1)}, null, this);
+        game.physics.arcade.overlap(this.player_2, this.flagList.children[1], function(){this.getFlag(2)}, null, this);
     },
 
     createMap: function(){
         for (var x = 0; x < 15; x++) {
             for (var y = 0; y < 15; y++) {
+                if( x == 1 && x == y){
+                    this.addBlueFlag();
+                    this.addRedFlag();
+                }
                 if (x === 0 || y === 0 || x == 14 || y == 14){
                     this.addWall(x, y);
                 }
@@ -149,7 +159,7 @@ var mainState = {
                 } else if(x < 4 && y < 4 || x > 10 && y > 10){
                     this.addGrass(x, y);
                 } else {
-                    if(Math.floor(Math.random() * 3)){
+                    if(Math.floor(Math.random() * 0)){
                         this.addBrick(x, y);
                     } else {
                         this.addGrass(x, y);
@@ -180,6 +190,27 @@ var mainState = {
         gameInPlay = false;
     },
 
+    getFlag: function(player){
+        // if(player == 1){
+        //     this.player.kill();
+        // } else {
+        //     this.player_2.kill();
+        // }
+
+        if(gameInPlay){
+            var score = Number(scoreBoard[player - 1].innerText);
+            scoreBoard[player - 1].innerText = score + 1;
+
+            if(score + 1 === 5){
+                this.showGameWinner(player);
+            } else {
+                this.showRoundWinner(player);
+            }
+        }
+
+        gameInPlay = false;
+    },
+
     addPlayers: function(){
 
         this.player = game.add.sprite(GAME_SIZE - 2 * this.PIXEL_SIZE, GAME_SIZE - 2 * this.PIXEL_SIZE, 'bomber');
@@ -187,6 +218,22 @@ var mainState = {
 
         this.player_2 = game.add.sprite(this.PIXEL_SIZE, this.PIXEL_SIZE, 'bomber');
         game.physics.arcade.enable(this.player_2);
+
+    },
+
+    addBlueFlag: function(){
+        var blueFlag = game.add.sprite(1 * this.PIXEL_SIZE, 1 * this.PIXEL_SIZE, 'blue-flag');
+        game.physics.arcade.enable(blueFlag);
+        blueFlag.body.immovable = true;
+        this.flagList.add(blueFlag);
+
+    },
+
+    addRedFlag: function(){
+        var redFlag = game.add.sprite((this.BLOCK_COUNT - 2) * this.PIXEL_SIZE, (this.BLOCK_COUNT - 2) * this.PIXEL_SIZE, 'red-flag');
+        game.physics.arcade.enable(redFlag);
+        redFlag.body.immovable = true;
+        this.flagList.add(redFlag);
 
     },
 
