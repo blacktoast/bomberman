@@ -14,6 +14,7 @@ var mainState = {
         game.load.image('bomber-right', 'assets/bomber-right.png');
         game.load.image('bomber-back', 'assets/bomber-back.png');
         game.load.image('next-round', 'assets/next-round.png');
+        game.load.image('start-game', 'assets/start-game.png');
     },
 
     create: function(){
@@ -56,7 +57,9 @@ var mainState = {
         this.background;
         this.button;
 
-        this.gameInPlay = true;
+        if(!gameInPlay){
+            this.showRoundWinner(null);
+        }
     },
 
     update: function(){
@@ -84,7 +87,7 @@ var mainState = {
         }
 
         if (this.enterKey.justUp){
-            if(this.gameInPlay)
+            if(gameInPlay)
                 this.dropBomb(1);
         }
 
@@ -115,7 +118,7 @@ var mainState = {
         }
 
         if (this.spaceKey.justUp){
-            if(this.gameInPlay)
+            if(gameInPlay)
                 this.dropBomb(2);
         }
 
@@ -123,11 +126,13 @@ var mainState = {
 
         game.physics.arcade.collide(this.player, this.wallList);
         game.physics.arcade.collide(this.player, this.brickList);
-        game.physics.arcade.overlap(this.player, this.explosionList, function(){this.burn(1);}, null, this);
-        game.physics.arcade.overlap(this.player, this.explosionList_2, function(){this.burn(1);}, null, this);
 
         game.physics.arcade.collide(this.player_2, this.wallList);
         game.physics.arcade.collide(this.player_2, this.brickList);
+
+        game.physics.arcade.overlap(this.player, this.explosionList, function(){this.burn(1);}, null, this);
+        game.physics.arcade.overlap(this.player, this.explosionList_2, function(){this.burn(1);}, null, this);
+
         game.physics.arcade.overlap(this.player_2, this.explosionList_2, function(){this.burn(2);}, null, this);
         game.physics.arcade.overlap(this.player_2, this.explosionList, function(){this.burn(2);}, null, this);
     },
@@ -155,15 +160,19 @@ var mainState = {
 
     burn: function(player){
         var score = Number(scoreBoard[player - 1].innerText);
-        scoreBoard[player - 1].innerText = score + 1;
 
         if(player == 1){
             this.player.kill();
         } else {
             this.player_2.kill();
         }
-        this.gameInPlay = false;
-        this.showRoundWinner(player);
+
+        if(gameInPlay){
+            scoreBoard[player - 1].innerText = score + 1;
+            this.showRoundWinner(player);
+        }
+
+        gameInPlay = false;
     },
 
     addPlayers: function(){
@@ -305,25 +314,30 @@ var mainState = {
     },
 
     showRoundWinner: function(player){
-        // this.background = game.add.tileSprite(40, 240, 520, 120, 'ground');
-        this.button = game.add.button(230, 330, 'next-round');
 
-        // this.button.onInputOver.add(over, this);
-        // this.button.onInputOut.add(out, this);
+        if(player !== null){
+            this.gameMessage = game.add.text(0, 0, "PLAYER " + player + " WINS", this.messageStyle);
+            this.gameMessage.setTextBounds(0, 0, 600, 560);
+            this.button = game.add.button(230, 300, 'next-round');
+        } else{
+            this.background = game.add.tileSprite(40, 40, 520, 520, 'grass');
+            this.gameMessage = game.add.text(0, 0, "LET'S PLAY", this.messageStyle);
+            this.gameMessage.setTextBounds(0, 0, 600, 560);
+            this.button = game.add.button(230, 300, 'start-game');
+        }
+
         this.button.onInputUp.add(this.restartGame, this);
-
-        this.gameMessage = game.add.text(0, 0, "PLAYER " + player + " WINS", this.messageStyle);
-        this.gameMessage.setTextBounds(0, 0, 600, 600);
     },
 
     restartGame: function(){
+        gameInPlay = true;
         game.state.start('main');
     }
 
 };
 
 var GAME_SIZE = 600;
-
+var gameInPlay = false;
 var game = new Phaser.Game(GAME_SIZE, GAME_SIZE);
 game.state.add('main', mainState);
 game.state.start('main');
