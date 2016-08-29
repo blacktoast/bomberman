@@ -13,6 +13,7 @@ var mainState = {
         game.load.image('bomber-left', 'assets/bomber-left.png');
         game.load.image('bomber-right', 'assets/bomber-right.png');
         game.load.image('bomber-back', 'assets/bomber-back.png');
+        game.load.image('next-round', 'assets/next-round.png');
     },
 
     create: function(){
@@ -48,6 +49,12 @@ var mainState = {
         this.sKey = game.input.keyboard.addKey(Phaser.Keyboard.S);
         this.dKey = game.input.keyboard.addKey(Phaser.Keyboard.D);
         this.wKey = game.input.keyboard.addKey(Phaser.Keyboard.W);
+
+        this.gameMessage;
+        this.messageStyle = { font: "60px Arcade", fill: "#FFFFFF", boundsAlignV: "middle", boundsAlignH: "center", align: "center", wordWrapWidth: 600};
+
+        this.background;
+        this.button;
     },
 
     update: function(){
@@ -144,10 +151,15 @@ var mainState = {
 
     burn: function(player){
         var score = Number(scoreBoard[player - 1].innerText);
-        console.log(score);
         scoreBoard[player - 1].innerText = score + 1;
 
-        game.state.start('main');
+        if(player == 1){
+            this.player.kill();
+        } else {
+            this.player_2.kill();
+        }
+
+        this.showRoundWinner(player);
     },
 
     addPlayers: function(){
@@ -287,6 +299,22 @@ var mainState = {
         wall.body.immovable = true;
 
     },
+
+    showRoundWinner: function(player){
+        this.background = game.add.tileSprite(40, 240, 520, 120, 'ground');
+        this.button = game.add.button(230, 330, 'next-round');
+
+        // this.button.onInputOver.add(over, this);
+        // this.button.onInputOut.add(out, this);
+        this.button.onInputUp.add(this.restartGame, this);
+
+        this.gameMessage = game.add.text(0, 0, "PLAYER " + player + " WINS", this.messageStyle);
+        this.gameMessage.setTextBounds(0, 0, 600, 600);
+    },
+
+    restartGame: function(){
+        game.state.start('main');
+    }
 
 };
 
