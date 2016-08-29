@@ -15,6 +15,7 @@ var mainState = {
         game.load.image('bomber-back', 'assets/bomber-back.png');
         game.load.image('next-round', 'assets/next-round.png');
         game.load.image('start-game', 'assets/start-game.png');
+        game.load.image('play-again', 'assets/play-again.png');
     },
 
     create: function(){
@@ -159,8 +160,6 @@ var mainState = {
     },
 
     burn: function(player){
-        var score = Number(scoreBoard[player - 1].innerText);
-
         if(player == 1){
             this.player.kill();
         } else {
@@ -168,8 +167,14 @@ var mainState = {
         }
 
         if(gameInPlay){
+            var score = Number(scoreBoard[player - 1].innerText);
             scoreBoard[player - 1].innerText = score + 1;
-            this.showRoundWinner(player);
+
+            if(score + 1 === 1){
+                this.showGameWinner(player);
+            } else {
+                this.showRoundWinner(player);
+            }
         }
 
         gameInPlay = false;
@@ -327,6 +332,19 @@ var mainState = {
         }
 
         this.button.onInputUp.add(this.restartGame, this);
+    },
+
+    showGameWinner: function(player){
+
+        this.gameMessage = game.add.text(0, 0, "GAME OVER!\nPLAYER " + player + " WINS", this.messageStyle);
+        this.gameMessage.setTextBounds(0, 0, 600, 560);
+        this.button = game.add.button(230, 350, 'play-again');
+
+        this.button.onInputUp.add(function(){
+            scoreBoard[0].innerText = 0;
+            scoreBoard[1].innerText = 0;
+            this.restartGame();
+        }, this);
     },
 
     restartGame: function(){
