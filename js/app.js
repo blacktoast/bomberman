@@ -170,7 +170,7 @@ var mainState = {
             var score = Number(scoreBoard[player - 1].innerText);
             scoreBoard[player - 1].innerText = score + 1;
 
-            if(score + 1 === 1){
+            if(score + 1 === 5){
                 this.showGameWinner(player);
             } else {
                 this.showRoundWinner(player);
