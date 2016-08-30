@@ -20,6 +20,12 @@ var mainState = {
         game.load.image('red-flag', 'assets/red-flag.png');
         game.load.image('boots', 'assets/boots.png');
         game.load.image('star', 'assets/star.png');
+        game.load.audio('bomb-sound', 'assets/bomb-sound.wav');
+        game.load.audio('power-up', 'assets/power-up.wav');
+        game.load.audio('winner', 'assets/winner.wav');
+        game.load.audio('intro', 'assets/intro.wav');
+        game.load.audio('game-start', 'assets/game-start.wav');
+        game.load.audio('round-end', 'assets/round-end.wav');
     },
 
     create: function(){
@@ -68,8 +74,12 @@ var mainState = {
         this.gameMessage = "";
         this.messageStyle = { font: "60px Arcade", fill: "#FFFFFF", boundsAlignV: "middle", boundsAlignH: "center", align: "center", wordWrapWidth: 600};
 
-        // this.background;
-        // this.button;
+        bombSound = game.add.audio('bomb-sound');
+        powerUp = game.add.audio('power-up');
+        winner = game.add.audio('winner');
+        intro = game.add.audio('intro');
+        gameStart = game.add.audio('game-start');
+        roundEnd = game.add.audio('round-end');
 
         if(!gameInPlay){
             this.showRoundWinner(null);
@@ -150,8 +160,8 @@ var mainState = {
         game.physics.arcade.overlap(this.player_2, this.explosionList_2, function(){this.burn(2);}, null, this);
         game.physics.arcade.overlap(this.player_2, this.explosionList, function(){this.burn(2);}, null, this);
 
-        game.physics.arcade.overlap(this.explosionList_2, this.flagList.children[0], function(){this.getFlag(1);}, null, this);
-        game.physics.arcade.overlap(this.explosionList_1, this.flagList.children[1], function(){this.getFlag(2);}, null, this);
+        game.physics.arcade.overlap(this.explosionList, this.flagList.children[0], function(){this.getFlag(1);}, null, this);
+        game.physics.arcade.overlap(this.explosionList_2, this.flagList.children[1], function(){this.getFlag(2);}, null, this);
 
         game.physics.arcade.overlap(this.player, this.bootList, function(){this.speedUp(1);}, null, this);
         game.physics.arcade.overlap(this.player_2, this.bootList, function(){this.speedUp(2);}, null, this);
@@ -204,8 +214,10 @@ var mainState = {
 
             if(score + 1 === 5){
                 this.showGameWinner(player);
+                winner.play();
             } else {
                 this.showRoundWinner(player);
+                roundEnd.play();
             }
         }
 
@@ -229,6 +241,8 @@ var mainState = {
     },
 
     speedUp: function(player){
+        powerUp.play();
+
         if(player == 1){
             this.playerSpeed = 350;
         } else {
@@ -248,6 +262,8 @@ var mainState = {
     },
 
     starUp: function(player){
+        powerUp.play();
+
         if(player == 1){
             this.playerPower = true;
         } else {
@@ -317,6 +333,8 @@ var mainState = {
     },
 
     detonateBomb: function(player, x, y, explosionList, wallList, brickList){
+        bombSound.play();
+
         var fire = [
             game.add.sprite(x, y, 'explosion'),
             game.add.sprite(x, y + 40, 'explosion'),
@@ -449,6 +467,7 @@ var mainState = {
             this.gameMessage.setTextBounds(0, 0, 600, 560);
             this.button = game.add.button(230, 300, 'next-round');
         } else{
+            intro.play();
             this.background = game.add.tileSprite(40, 40, 520, 520, 'grass');
             this.gameMessage = game.add.text(0, 0, "LET'S PLAY", this.messageStyle);
             this.gameMessage.setTextBounds(0, 0, 600, 560);
@@ -474,6 +493,7 @@ var mainState = {
     restartGame: function(){
         gameInPlay = true;
         game.state.start('main');
+        gameStart.play();
     }
 
 };
