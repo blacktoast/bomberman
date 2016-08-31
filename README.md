@@ -1,5 +1,7 @@
 # Bomberman
 
+[https://kevinpagtakhan.github.io/bomberman/](https://kevinpagtakhan.github.io/bomberman/ )
+
 ## Story of the Game
 A was began between 2 leaders began. Each player attempts to take control of their opponent's base, identified with a flag. Both leaders are wealthy enough to carry unlimited bombs to use to navigate through the field and threaten their opponents. 
 
@@ -7,7 +9,7 @@ The rest of the world tries to intervene, and builds a great wall between the 2 
 
 Make sure to not let these leaders not that there are hidden power ups under the walls. Match these with their unlimited bombs and 5-round wins, they can rule the world.
 
-![alt text](assets/game-screen.png "Game Screenshot")
+<div style="text-align:center"><img src ="assets/game-screen.png" width="400"/></div>
 
 ### Controls
 
