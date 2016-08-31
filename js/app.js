@@ -73,6 +73,7 @@ var mainState = {
 
         this.gameMessage = "";
         this.messageStyle = { font: "60px Arcade", fill: "#FFFFFF", boundsAlignV: "middle", boundsAlignH: "center", align: "center", wordWrapWidth: 600};
+        this.infoStyle = { font: "30px Arcade", fill: "#FFFFFF", boundsAlignV: "middle", boundsAlignH: "center", align: "center", wordWrapWidth: 600};
 
         bombSound = game.add.audio('bomb-sound');
         powerUp = game.add.audio('power-up');
@@ -469,9 +470,15 @@ var mainState = {
         } else{
             intro.play();
             this.background = game.add.tileSprite(40, 40, 520, 520, 'grass');
-            this.gameMessage = game.add.text(0, 0, "LET'S PLAY", this.messageStyle);
+            var introString = "LET'S PLAY BOMBERMAN" + "\n";
+                introString += "You are in a mission to take control" + "\n";
+                introString += "of you opponents base. Drop bombs" + "\n";
+                introString += "to destroy the walls and navigate" + "\n";
+                introString += "through the field." + "\n";
+
+            this.gameMessage = game.add.text(0, 0, introString, this.infoStyle);
             this.gameMessage.setTextBounds(0, 0, 600, 560);
-            this.button = game.add.button(230, 300, 'start-game');
+            this.button = game.add.button(230, 350, 'start-game');
         }
 
         this.button.onInputUp.add(this.restartGame, this);
