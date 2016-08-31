@@ -9,7 +9,7 @@ The rest of the world tries to intervene, and builds a great wall between the 2 
 
 Make sure to not let these leaders not that there are hidden power ups under the walls. Match these with their unlimited bombs and 5-round wins, they can rule the world.
 
-<div style="text-align:center"><img src ="assets/game-screen.png" width="400"/></div>
+<img src="assets/game-screen.png"/>
 
 ### Controls
 
