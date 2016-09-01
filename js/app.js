@@ -1,25 +1,45 @@
+/**
+ * Project Name:    Bomberman
+ * Project URL:     https://kevinpagtakhan.github.io/bomberman/
+ * Description:     This is a game inspired by the original Bomberman developed using JavaScript and Phaser.
+ * Version:         1.0.0
+ * Author:          Kevin Pagtakhan
+ * Author URI:      https://github.com/kevinpagtakhan
+ **/
+
 var scoreBoard = document.querySelectorAll(".score");
 
 var mainState = {
     preload: function(){
+        // Map sprites
         game.load.image('ground', 'assets/ground.png');
         game.load.image('grass', 'assets/grass.png');
         game.load.image('wall', 'assets/wall.png');
         game.load.image('brick', 'assets/brick.png');
+        game.load.image('blue-flag', 'assets/blue-flag.png');
+        game.load.image('red-flag', 'assets/red-flag.png');
+
+        // Weapon sprites
         game.load.image('bomb', 'assets/bomb.png');
-        game.load.image('bomber', 'assets/bomber.png');
         game.load.image('explosion', 'assets/explosion.png');
+
+        // Player sprites
+        game.load.image('bomber', 'assets/bomber.png');
         game.load.image('bomber-front', 'assets/bomber-front.png');
         game.load.image('bomber-left', 'assets/bomber-left.png');
         game.load.image('bomber-right', 'assets/bomber-right.png');
         game.load.image('bomber-back', 'assets/bomber-back.png');
+
+        // Button sprites
         game.load.image('next-round', 'assets/next-round.png');
         game.load.image('start-game', 'assets/start-game.png');
         game.load.image('play-again', 'assets/play-again.png');
-        game.load.image('blue-flag', 'assets/blue-flag.png');
-        game.load.image('red-flag', 'assets/red-flag.png');
+
+        // Power up sprites
         game.load.image('boots', 'assets/boots.png');
         game.load.image('star', 'assets/star.png');
+        
+        // Audio clip sprites
         game.load.audio('bomb-sound', 'assets/bomb-sound.wav');
         game.load.audio('power-up', 'assets/power-up.wav');
         game.load.audio('winner', 'assets/winner.wav');
@@ -36,11 +56,7 @@ var mainState = {
         game.physics.startSystem(Phaser.Physics.ARCADE);
         game.world.enableBody = true;
 
-        for (var x = 0; x < 15; x++) {
-            for (var y = 0; y < 15; y++) {
-                this.addGround(x, y);
-            }
-        }
+        // Group container of game sprites
         this.grassList = game.add.group();
         this.wallList = game.add.group();
         this.bootList = game.add.group();
@@ -53,28 +69,42 @@ var mainState = {
         this.explosionList = game.add.group();
         this.explosionList_2 = game.add.group();
 
+        // Adds ground to entire map
+        for (var x = 0; x < 15; x++) {
+            for (var y = 0; y < 15; y++) {
+                this.addGround(x, y);
+            }
+        }
+
+        // Adds walls, bricks and powerups
         this.createMap();
 
+        // Players 1's intial properties
         this.playerSpeed = 150;
-        this.playerSpeed_2 = 150;
         this.playerPower = false;
-        this.playerPower_2 = false;
         this.playerDrop = true;
+        // Players 2's intial properties
+        this.playerSpeed_2 = 150;
+        this.playerPower_2 = false;
         this.playerDrop_2 = true;
 
-        this.cursor = game.input.keyboard.createCursorKeys();
-        this.enterKey = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
-        this.spaceKey = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-
+        // Creates listeners for player 1's controls
         this.aKey = game.input.keyboard.addKey(Phaser.Keyboard.A);
         this.sKey = game.input.keyboard.addKey(Phaser.Keyboard.S);
         this.dKey = game.input.keyboard.addKey(Phaser.Keyboard.D);
         this.wKey = game.input.keyboard.addKey(Phaser.Keyboard.W);
+        this.spaceKey = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 
+        // Creates listeners for player 2's controls
+        this.cursor = game.input.keyboard.createCursorKeys();
+        this.enterKey = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
+
+        // Creates game feedback message
         this.gameMessage = "";
         this.messageStyle = { font: "60px Arcade", fill: "#FFFFFF", boundsAlignV: "middle", boundsAlignH: "center", align: "center", wordWrapWidth: 600};
         this.infoStyle = { font: "30px Arcade", fill: "#FFFFFF", boundsAlignV: "middle", boundsAlignH: "center", align: "center", wordWrapWidth: 600};
 
+        // Adds audio clips to game
         bombSound = game.add.audio('bomb-sound');
         powerUp = game.add.audio('power-up');
         winner = game.add.audio('winner');
@@ -82,6 +112,7 @@ var mainState = {
         gameStart = game.add.audio('game-start');
         roundEnd = game.add.audio('round-end');
 
+        // Shows splash screen
         if(!gameInPlay){
             this.showRoundWinner(null);
         }
