@@ -34,11 +34,9 @@ var mainState = {
         game.load.image('next-round', 'assets/next-round.png');
         game.load.image('start-game', 'assets/start-game.png');
         game.load.image('play-again', 'assets/play-again.png');
-
         // Power up sprites
         game.load.image('boots', 'assets/boots.png');
         game.load.image('star', 'assets/star.png');
-        
         // Audio clip sprites
         game.load.audio('bomb-sound', 'assets/bomb-sound.wav');
         game.load.audio('power-up', 'assets/power-up.wav');
@@ -56,6 +54,13 @@ var mainState = {
         game.physics.startSystem(Phaser.Physics.ARCADE);
         game.world.enableBody = true;
 
+        // Adds ground to entire map
+        for (var x = 0; x < 15; x++) {
+            for (var y = 0; y < 15; y++) {
+                this.addGround(x, y);
+            }
+        }
+        
         // Group container of game sprites
         this.grassList = game.add.group();
         this.wallList = game.add.group();
@@ -69,12 +74,6 @@ var mainState = {
         this.explosionList = game.add.group();
         this.explosionList_2 = game.add.group();
 
-        // Adds ground to entire map
-        for (var x = 0; x < 15; x++) {
-            for (var y = 0; y < 15; y++) {
-                this.addGround(x, y);
-            }
-        }
 
         // Adds walls, bricks and powerups
         this.createMap();
