@@ -44,11 +44,16 @@ var mainState = {
         game.load.audio('intro', 'assets/intro.wav');
         game.load.audio('game-start', 'assets/game-start.wav');
         game.load.audio('round-end', 'assets/round-end.wav');
+
+        game.load.audio('bg-music', 'assets/48-battle.mp3');
     },
 
     create: function(){
         this.BLOCK_COUNT = 15;
         this.PIXEL_SIZE = GAME_SIZE / this.BLOCK_COUNT;
+
+        music = game.add.audio('bg-music', 1, true);
+        music.play();
 
         game.stage.backgroundColor = "#49311C";
         game.physics.startSystem(Phaser.Physics.ARCADE);
@@ -60,7 +65,7 @@ var mainState = {
                 this.addGround(x, y);
             }
         }
-        
+
         // Group container of game sprites
         this.grassList = game.add.group();
         this.wallList = game.add.group();
@@ -176,8 +181,6 @@ var mainState = {
             if(gameInPlay)
                 this.dropBomb(2);
         }
-
-
 
         game.physics.arcade.collide(this.player, this.wallList);
         game.physics.arcade.collide(this.player, this.brickList);
@@ -529,8 +532,9 @@ var mainState = {
 
     restartGame: function(){
         gameInPlay = true;
-        game.state.start('main');
+        music.stop();
         gameStart.play();
+        game.state.start('main');
     }
 
 };
