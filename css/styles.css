@@ -3,8 +3,19 @@
   src: url('/fonts/ARCADE.ttf');
 }
 
+html, body{
+    min-height: 100%;
+    min-width: 100%;
+}
+
+html{
+    display: table;
+}
+
 body{
     background: black;
+    display: table-cell;
+    vertical-align: middle;
     font-family: 'Arcade';
 }
 
