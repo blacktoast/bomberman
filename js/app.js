@@ -6,7 +6,7 @@
  * Author:          Kevin Pagtakhan
  * Author URI:      https://github.com/kevinpagtakhan
  **/
-
+//html에 class의 score가 포함되어있는
 var scoreBoard = document.querySelectorAll(".score");
 
 var mainState = {
@@ -50,6 +50,8 @@ var mainState = {
 
     create: function(){
         this.BLOCK_COUNT = 15;
+
+        //600/15 블럭하나의 크기를 계산.
         this.PIXEL_SIZE = GAME_SIZE / this.BLOCK_COUNT;
 
         music = game.add.audio('bg-music', 1, true);
@@ -80,14 +82,14 @@ var mainState = {
         this.explosionList_2 = game.add.group();
 
 
-        // Adds walls, bricks and powerups
+        // 벽과 블럭 그리고 아이템을 설정한다.
         this.createMap();
 
-        // Players 1's intial properties
+        // Players 1's 초기설정
         this.playerSpeed = 150;
         this.playerPower = false;
         this.playerDrop = true;
-        // Players 2's intial properties
+        // Players 2's 초기설정
         this.playerSpeed_2 = 150;
         this.playerPower_2 = false;
         this.playerDrop_2 = true;
@@ -99,7 +101,8 @@ var mainState = {
         this.wKey = game.input.keyboard.addKey(Phaser.Keyboard.W);
         this.spaceKey = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 
-        // Creates listeners for player 2's controls
+        // 풀래이어2의 컨트트롤할것을 구성
+        //input.keyboard.createCursorKeys 은 방향키4개가 포함된 객체를 반환하는 메서드이다.
         this.cursor = game.input.keyboard.createCursorKeys();
         this.enterKey = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
 
@@ -108,7 +111,7 @@ var mainState = {
         this.messageStyle = { font: "60px Arcade", fill: "#FFFFFF", boundsAlignV: "middle", boundsAlignH: "center", align: "center", wordWrapWidth: 600};
         this.infoStyle = { font: "30px Arcade", fill: "#FFFFFF", boundsAlignV: "middle", boundsAlignH: "center", align: "center", wordWrapWidth: 600};
 
-        // Adds audio clips to game
+        // 게임의 사운드를 구성한다.
         bombSound = game.add.audio('bomb-sound');
         powerUp = game.add.audio('power-up');
         winner = game.add.audio('winner');
@@ -116,7 +119,7 @@ var mainState = {
         gameStart = game.add.audio('game-start');
         roundEnd = game.add.audio('round-end');
 
-        // Shows splash screen
+        // 게임 시작화면을 출력한다, gaminplay변수는 현재 게임이 진행중인지 아닌지를 판가름하는 변수인듯하다.
         if(!gameInPlay){
             this.showRoundWinner(null);
         }
@@ -182,11 +185,11 @@ var mainState = {
                 this.dropBomb(2);
         }
 
-        game.physics.arcade.collide(this.player, this.wallList);
         game.physics.arcade.collide(this.player, this.brickList);
-
+        game.physics.arcade.collide(this.player, this.wallList);
         game.physics.arcade.collide(this.player_2, this.wallList);
         game.physics.arcade.collide(this.player_2, this.brickList);
+
 
         game.physics.arcade.overlap(this.player, this.explosionList, function(){this.burn(1);}, null, this);
         game.physics.arcade.overlap(this.player, this.explosionList_2, function(){this.burn(1);}, null, this);
@@ -194,14 +197,14 @@ var mainState = {
         game.physics.arcade.overlap(this.player_2, this.explosionList_2, function(){this.burn(2);}, null, this);
         game.physics.arcade.overlap(this.player_2, this.explosionList, function(){this.burn(2);}, null, this);
 
-        game.physics.arcade.overlap(this.explosionList, this.flagList.children[0], function(){this.getFlag(1);}, null, this);
-        game.physics.arcade.overlap(this.explosionList_2, this.flagList.children[1], function(){this.getFlag(2);}, null, this);
+        game.physics.arcade.overlap(this.explosionList, this.flagList.children[0], function(){this.getFlag(2);}, null, this);
+        game.physics.arcade.overlap(this.explosionList_2, this.flagList.children[1], function(){this.getFlag(1);}, null, this);
 
-        game.physics.arcade.overlap(this.player, this.bootList, function(){this.speedUp(1);}, null, this);
-        game.physics.arcade.overlap(this.player_2, this.bootList, function(){this.speedUp(2);}, null, this);
+        game.physics.arcade.overlap(this.player, this.bootList, function(a,b,item){this.speedUp(1,item);}, null, this);
+        game.physics.arcade.overlap(this.player_2, this.bootList, function(a,b,item){this.speedUp(2,item);}, null, this);
 
-        game.physics.arcade.overlap(this.player, this.starList, function(){this.starUp(1);}, null, this);
-        game.physics.arcade.overlap(this.player_2, this.starList, function(){this.starUp(2);}, null, this);
+        game.physics.arcade.overlap(this.player, this.starList, function(a,item){this.starUp(1,item);}, null, this);
+        game.physics.arcade.overlap(this.player_2, this.starList, function(a,item){this.starUp(2,item);}, null, this);
     },
 
     createMap: function(){
@@ -210,21 +213,21 @@ var mainState = {
                 if( x == 1 && x == y){
                     this.addBlueFlag();
                     this.addRedFlag();
-                }
+                }//전체를 둘러싸는 벽
                 if (x === 0 || y === 0 || x == 14 || y == 14){
                     this.addWall(x, y);
-                }
+                }//중간 2칸마다의벽
                 else if(x % 2 === 0 && y % 2 === 0){
                     this.addWall(x, y);
-                } else if(x < 4 && y < 4 || x > 10 && y > 10){
+                } else if(x < 4 && y < 4 || x > 10 && y > 10){  //플레이어 자리주변의 잔디깔기
                     this.addGrass(x, y);
-                } else {
+                } else {//랜덤적으로 벽돌을깔고,
                     if(Math.floor(Math.random() * 3)){
                         this.addBrick(x, y);
-                        if(Math.floor(Math.random() * 1.02)){
+                        if(Math.floor(Math.random() * 3)){
                             this.addBoots(x, y);
                         }
-                        if(Math.floor(Math.random() * 1.02)){
+                        if(Math.floor(Math.random() * 3)){
                             this.addStar(x, y);
                         }
                     } else {
@@ -241,7 +244,7 @@ var mainState = {
         } else {
             this.player_2.kill();
         }
-
+        //게임 스코어를 올리는 코드
         if(gameInPlay){
             var score = Number(scoreBoard[player - 1].innerText);
             scoreBoard[player - 1].innerText = score + 1;
@@ -259,7 +262,7 @@ var mainState = {
     },
 
     getFlag: function(player){
-
+        //위에 코드를 그대로 긁어와서 오류가 발생한듯하다
         if(gameInPlay){
             var score = Number(scoreBoard[player - 1].innerText);
             scoreBoard[player - 1].innerText = score + 1;
@@ -274,7 +277,7 @@ var mainState = {
         gameInPlay = false;
     },
 
-    speedUp: function(player){
+    speedUp: function(player,item){
         powerUp.play();
 
         if(player == 1){
@@ -282,10 +285,11 @@ var mainState = {
         } else {
             this.playerSpeed_2 = 350;
         }
-
-        this.bootList.forEach(function(element){
-            element.kill();
-        });
+        //아이템을 먹었으면 사라지게한다
+        //foreach문은 무슨역할을 하는걸까? 입력값으로 함수를 받는것같은데.
+        //자바스트립트에서 foreach는 배열에 있는 각요소에 대해 오름차순 순서로 콜백함수를 호출한다
+        //그렇다면 결국 하나를 먹게되면 아이템이 다
+      item.kill();
     },
 
     addBoots: function(x, y){
@@ -323,6 +327,9 @@ var mainState = {
 
         this.player_2 = game.add.sprite(this.PIXEL_SIZE, this.PIXEL_SIZE, 'bomber');
         game.physics.arcade.enable(this.player_2);
+        this.player_2.scale.setTo(0.9,0.9);
+        this.player.scale.setTo(0.9,0.9);
+
 
     },
 
@@ -407,6 +414,7 @@ var mainState = {
             explosionList.forEach(function(element){
                 element.kill();
             });
+            //fire와 벽돌의 좌표값이 같은 spirte들을 모아 배열을 만들고,427라인을 통해서 제거한다.
             var temp = brickList.filter(function(element){
                 for (var i = 0; i < fire.length; i++) {
                     if(element.x == fire[i].x && element.y == fire[i].y){
@@ -421,7 +429,7 @@ var mainState = {
             });
         }, 1000);
     },
-
+    //폭탄을 떨어트리는 함수
     dropBomb: function(player){
         var gridX;
         var gridY;
@@ -433,12 +441,13 @@ var mainState = {
 
         if(player == 1  && this.playerDrop){
             this.playerDrop = false;
+            //현재 플레이어의 좌표값을 구해서 그밑에다 둔다.
             gridX = this.player.x - this.player.x % 40;
             gridY = this.player.y - this.player.y % 40;
 
             bomb = game.add.sprite(gridX, gridY, 'bomb');
             game.physics.arcade.enable(bomb);
-            bomb.body.immovable = true;
+
             this.bombList.add(bomb);
 
             detonateBomb = this.detonateBomb;
