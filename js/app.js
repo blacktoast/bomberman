@@ -62,8 +62,8 @@ var mainState = {
         game.world.enableBody = true;
 
         // Adds ground to entire map
-        for (var x = 0; x < 15; x++) {
-            for (var y = 0; y < 15; y++) {
+        for (var x = 0; x < this.BLOCK_COUNT; x++) {
+            for (var y = 0; y < this.BLOCK_COUNT; y++) {
                 this.addGround(x, y);
             }
         }
@@ -200,16 +200,16 @@ var mainState = {
         game.physics.arcade.overlap(this.explosionList, this.flagList.children[0], function(){this.getFlag(2);}, null, this);
         game.physics.arcade.overlap(this.explosionList_2, this.flagList.children[1], function(){this.getFlag(1);}, null, this);
 
-        game.physics.arcade.overlap(this.player, this.bootList, function(a,b,item){this.speedUp(1,item);}, null, this);
-        game.physics.arcade.overlap(this.player_2, this.bootList, function(a,b,item){this.speedUp(2,item);}, null, this);
+        game.physics.arcade.overlap(this.player, this.bootList, function(a,item){this.speedUp(1,item);}, null, this);
+        game.physics.arcade.overlap(this.player_2, this.bootList, function(a,item){this.speedUp(2,item);}, null, this);
 
         game.physics.arcade.overlap(this.player, this.starList, function(a,item){this.starUp(1,item);}, null, this);
         game.physics.arcade.overlap(this.player_2, this.starList, function(a,item){this.starUp(2,item);}, null, this);
     },
 
     createMap: function(){
-        for (var x = 0; x < 15; x++) {
-            for (var y = 0; y < 15; y++) {
+        for (var x = 0; x < this.BLOCK_COUNT; x++) {
+            for (var y = 0; y < this.BLOCK_COUNT; y++) {
                 if( x == 1 && x == y){
                     this.addBlueFlag();
                     this.addRedFlag();
@@ -299,7 +299,7 @@ var mainState = {
         this.bootList.add(boots);
     },
 
-    starUp: function(player){
+    starUp: function(player,item){
         powerUp.play();
 
         if(player == 1){
@@ -308,9 +308,7 @@ var mainState = {
             this.playerPower_2 = true;
         }
 
-        this.starList.forEach(function(element){
-            element.kill();
-        });
+        item.kill();
     },
 
     addStar: function(x, y){
@@ -405,7 +403,8 @@ var mainState = {
             if(game.physics.arcade.overlap(fire[i], wallList)){
                 fire[i].kill();
                 if(i > 0 && fire[i + 4] !== undefined){
-                    fire[i + 4].kill();
+                    this.brick_over=true;
+                    fire[i+4].kill();
                 }
             }
         }
@@ -416,18 +415,44 @@ var mainState = {
             });
             //fire와 벽돌의 좌표값이 같은 spirte들을 모아 배열을 만들고,427라인을 통해서 제거한다.
             var temp = brickList.filter(function(element){
+              if(mainState.playerPower && this.brick_over)
+              {
+                for (var i = 0; i < fire.length-4; i++) {
+                    if(element.x == fire[i].x && element.y == fire[i].y){
+                        return true;
+                    }
+                }
+                return false;
+
+              }
+              else if(mainState.playerPower_2 && this.brick_over)
+              {
+                for (var i = 0; i < fire.length-4; i++) {
+                    if(element.x == fire[i].x && element.y == fire[i].y){
+                        return true;
+                    }
+                }
+                return false;
+
+              }
+              else {
                 for (var i = 0; i < fire.length; i++) {
                     if(element.x == fire[i].x && element.y == fire[i].y){
                         return true;
                     }
                 }
                 return false;
+
+              }
+
             });
+            this.brick_over=false;
 
             temp.list.forEach(function(element){
                 element.kill();
             });
         }, 1000);
+
     },
     //폭탄을 떨어트리는 함수
     dropBomb: function(player){
